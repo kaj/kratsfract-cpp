@@ -23,7 +23,7 @@ FractalWidget::FractalWidget()
     sigc::mem_fun(*this, &FractalWidget::on_button_clicked));
 
   p2c.set_center(Complex(-.5));
-  fractal = new Mandelbrot(255);
+  fractal = new Mandelbrot(1024);
 }
 
 bool FractalWidget::on_button_clicked(GdkEventButton* event) {
@@ -45,6 +45,19 @@ bool FractalWidget::on_button_clicked(GdkEventButton* event) {
   return true;
 }
 
+class Palette {
+public:
+  Palette(int n) : n_colors(n) {}
+
+  void put(int c, guint8* p) {
+    *p++ = char(c % 255);
+    *p++ = char(c % 255);
+    *p++ = char(c * 255 / n_colors);
+  }
+private:
+  int n_colors;
+};
+
 bool FractalWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
   Glib::RefPtr<Gdk::Pixbuf> image =
@@ -55,15 +68,13 @@ bool FractalWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   // Complex c(-0.75, 0.14);
   // Complex zero(0);
   int rowstride = image->get_rowstride();
-  
+
+  Palette palette(fractal->get_maxiter());
   guint8* data = image->get_pixels();
   for (int y = 0; y < image->get_height(); ++y) {
     for (int x = 0; x < image->get_width(); ++x) { 
-      int iter = fractal->calc(p2c(x, y));
-      guint8* p = &data[rowstride * y + 3*x];
-      *p++ = char(iter);
-      *p++ = char(iter);
-      *p++ = char(iter);
+      palette.put(fractal->calc(p2c(x, y)),
+		  &data[rowstride * y + 3*x]);
     }
   }
 
