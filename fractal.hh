@@ -3,7 +3,9 @@
 class Fractal {
 public:
   Fractal(int m) : maxiter(m) {}
-  virtual int calc(Complex c) = 0;
+  virtual int calc(Complex c) const = 0;
+
+  int get_maxiter() const { return maxiter; }
 protected:
   int maxiter;
 };
@@ -11,14 +13,14 @@ protected:
 class Mandelbrot : public Fractal {
 public:
   Mandelbrot(int maxiter) : Fractal(maxiter) { }
-  int calc(Complex z);
+  int calc(Complex z) const;
 };
 
 class Julia : public Fractal {
 public:
   Julia(Complex c, int maxiter);
 
-  int calc(Complex z);
+  int calc(Complex z) const;
 private:
   Complex c;
 };
