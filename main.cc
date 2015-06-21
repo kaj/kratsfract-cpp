@@ -22,6 +22,7 @@ FractalWidget::FractalWidget()
   signal_button_press_event().connect(
     sigc::mem_fun(*this, &FractalWidget::on_button_clicked));
 
+  p2c.set_center(Complex(-.5));
   fractal = new Mandelbrot(255);
 }
 
